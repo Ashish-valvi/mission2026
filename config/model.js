@@ -14,6 +14,12 @@ const userSchema = new Schema({
         minlength:3,
         maxlength:20
     },
+    about:{
+        type:String,
+        required: true,
+        minlength:3,
+        maxlength:300
+    },
     email:{
         type:String,
         lowercase:true,
@@ -41,5 +47,7 @@ const userSchema = new Schema({
 },{timestamps:true})
 
 const UserModel = model('user',userSchema);
+
+
 
 module.exports = UserModel;

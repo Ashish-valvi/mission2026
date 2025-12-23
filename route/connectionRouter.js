@@ -46,20 +46,42 @@ connectionRouter.post("/sendConnectionRequest/:touser/:status", userAuth ,async 
       console.log(beforeReq)
       throw new Error("connection request have already sent")
    }
-   // check for previous request from alternate person(toperson) ✅ accept pending
+   // check for previous request from alternate person(toperson) ✅  accept request  ✅
+
    const reqFromToUser = await ConnectionModel.findOne({fromUser:toUser, toUser:fromUser ,  status:"intrested"}) 
    if(reqFromToUser){
-
-      // here put logic to patch and update the doccument and change status to accepted
-
-      console.log("Congratulation Its a match");
+      if(status === "intrested"){
+          // here put logic to patch and update the doccument and change status to accepted
+    const updateConnection = await ConnectionModel.findByIdAndUpdate(reqFromToUser._id,{status:"accepted"})
+    
+    console.log("Congratulation Its a match");
+    res.send("its a match")
+    return
+      }
+      if(status === "ignored"){
+          const updateConnection = await ConnectionModel.findByIdAndUpdate(reqFromToUser._id,{status:"rejected"})
+    
+    console.log("match rejected");
+    res.send("you ignored him")
+    return
+         
+      }
+    
    }
+   const checkRejected = await ConnectionModel.findOne({fromUser:toUser, toUser:fromUser ,  status:"rejected"}) 
+   if(checkRejected){
+      res.send("you cant send request because you have rejected already")
+      return;
+   }
+
+
+   // reject reuest logic 
+   // if(status === "ignored")
+
 
    //saving to db ✅
     const result = new ConnectionModel({fromUser,toUser,fromUserName:fromUserName,toUserName:toUserName,status})
     let saveResult = await result.save()
-
-   
    
    res.send("connection request send succesfully")
    } catch (err) {
